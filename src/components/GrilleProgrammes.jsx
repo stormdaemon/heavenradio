@@ -29,7 +29,7 @@ function GrilleProgrammes() {
       ]
     },
     {
-      time: '22h30',
+      time: '22h - 1h',
       content: [
         { type: 'title', text: 'Live TikTok / Twitch / Discord' },
         { type: 'program', text: 'La libre antenne' },
@@ -37,9 +37,12 @@ function GrilleProgrammes() {
       ]
     },
     {
-      time: '1h30',
+      time: '1h - 7h',
       content: [
-        { type: 'title', text: 'Les mystères lumineux' }
+        { type: 'title', text: '🌙 Heaven Night' },
+        { type: 'program', text: '3h : Chapelet à la miséricorde divine' },
+        { type: 'program', text: '5h : Les mystères lumineux' },
+        { type: 'program', text: 'Ambiance nocturne spirituelle' }
       ]
     }
   ];

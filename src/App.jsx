@@ -637,7 +637,7 @@ function App() {
                <div className="footer-column">
                  <h4>Contact</h4>
                  <ul>
-                   <li><a href="mailto:catholiqueloungemusic@gmail.com"><i className="fas fa-envelope"></i> catholiqueloungemusic@gmail.com</a></li>
+                   <li><a href="mailto:catholicloungemusic@gmail.com"><i className="fas fa-envelope"></i> catholicloungemusic@gmail.com</a></li>
                    <li><a href="#">Partenariats</a></li>
                    <li><a href="#">Mentions légales</a></li>
                  </ul>
@@ -711,6 +711,94 @@ function App() {
            </div>
          </div>
        </footer>
+
+       {/* Menu flottant des réseaux sociaux */}
+       <div className="floating-social-menu">
+         <motion.div 
+           className="social-menu-items"
+           initial={{ opacity: 0, x: 50 }}
+           animate={{ opacity: 1, x: 0 }}
+           transition={{ type: "spring", stiffness: 300, damping: 20 }}
+         >
+           <motion.a 
+             href="https://discord.com/invite/NNTR3NzPXk" 
+             target="_blank"
+             rel="noopener noreferrer"
+             className="social-item discord"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.1 }}
+           >
+             <i className="fab fa-discord"></i>
+           </motion.a>
+           
+           <motion.a 
+             href="https://www.facebook.com/heavenradiocatholique" 
+             target="_blank"
+             rel="noopener noreferrer"
+             className="social-item facebook"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.2 }}
+           >
+             <i className="fab fa-facebook"></i>
+           </motion.a>
+           
+           <motion.a 
+             href="https://www.instagram.com/heavenradio.fr/" 
+             target="_blank"
+             rel="noopener noreferrer"
+             className="social-item instagram"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.3 }}
+           >
+             <i className="fab fa-instagram"></i>
+           </motion.a>
+           
+           <motion.a 
+             href="https://www.tiktok.com/@heavenradiocatholique" 
+             target="_blank"
+             rel="noopener noreferrer"
+             className="social-item tiktok"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.4 }}
+           >
+             <i className="fab fa-tiktok"></i>
+           </motion.a>
+           
+           <motion.a 
+             href="https://www.youtube.com/@heavenradiocatholique" 
+             target="_blank"
+             rel="noopener noreferrer"
+             className="social-item youtube"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.5 }}
+           >
+             <i className="fab fa-youtube"></i>
+           </motion.a>
+           
+           <motion.a 
+             href="https://www.twitch.tv/heavenradiocatholique" 
+             target="_blank"
+             rel="noopener noreferrer"
+             className="social-item twitch"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.6 }}
+           >
+             <i className="fab fa-twitch"></i>
+           </motion.a>
+         </motion.div>
+       </div>
     </div>
   );
 }
