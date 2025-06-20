@@ -253,7 +253,7 @@ body {
   z-index: 3;
   position: relative;
   padding: 0 2rem;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero-actions {
