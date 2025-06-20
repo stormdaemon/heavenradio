@@ -186,7 +186,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: 'Michroma', sans-serif;
   background: #000;
   color: #fff;
   line-height: 1.6;
@@ -246,13 +246,14 @@ body {
 }
 
 .hero-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   text-align: center;
   width: 100%;
   z-index: 3;
   position: relative;
   padding: 0 2rem;
+  overflow: hidden;
 }
 
 .hero-actions {
@@ -389,7 +390,7 @@ body {
 }
 
 .contact-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
   width: 100%;
@@ -422,7 +423,7 @@ body {
 }
 
 .contact-form-wrapper {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   width: 100%;
 }
@@ -447,10 +448,96 @@ body {
   width: 100%;
 }
 
-.radio-player iframe,
-.next-track-widget iframe {
+.radio-player iframe {
   border-radius: 10px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.next-track-widget {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 470px;
+  min-height: 80px;
+}
+
+.track-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.track-header h4 {
+  color: #d4af37;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.track-details {
+  flex: 1;
+}
+
+.track-title {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.track-artist {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.track-album {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.track-cover {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.track-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.track-loading,
+.track-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  min-height: 60px;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-top: 2px solid #d4af37;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Grille Programmes Responsive */
@@ -634,6 +721,9 @@ body {
   background-clip: text;
   text-shadow: 0 0 30px rgba(218, 165, 32, 0.3);
   line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .hero-buttons {
@@ -1177,7 +1267,7 @@ body {
 /* Footer */
 .footer {
   background: linear-gradient(135deg, #0a0a0a 0%, #000 50%, #1a1a1a 100%);
-  padding: 20px 0 10px;
+  padding-top: 1rem;
   border-top: 1px solid rgba(212, 175, 55, 0.2);
   position: relative;
 }
@@ -1199,7 +1289,7 @@ body {
 .footer-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 40px;
+  padding-right: 5rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1675,7 +1765,7 @@ body {
   .about-container {
     padding: 0 20px;
   }
-  
+
   .footer-content {
     padding: 60px 20px 30px;
   }
@@ -1819,7 +1909,7 @@ body {
 
 /* Contact Form Styles */
 .contact-form {
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
   background: rgba(255, 255, 255, 0.05);
@@ -1859,7 +1949,7 @@ body {
   color: white;
   font-size: 1rem;
   transition: all 0.3s ease;
-  font-family: inherit;
+  font-family: 'Michroma', sans-serif;
 }
 
 .form-field input:focus,
@@ -2144,10 +2234,26 @@ body {
     max-width: 100%;
   }
   
-  .radio-player iframe,
-  .next-track-widget iframe {
+  .radio-player iframe {
     width: 100%;
     max-width: 350px;
+    height: 100px;
+  }
+
+  .next-track-widget {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .track-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .track-cover {
+    width: 50px;
+    height: 50px;
   }
   
   /* Headers */
@@ -2301,11 +2407,30 @@ body {
   }
   
   /* Radio player mobile */
-  .radio-player iframe,
-  .next-track-widget iframe {
-    width: 100%;
-    max-width: 300px;
-  }
+.radio-player iframe {
+  width: 100%;
+  max-width: 300px;
+  height: 80px;
+}
+
+.next-track-widget {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.75rem;
+}
+
+.track-title {
+  font-size: 0.9rem;
+}
+
+.track-artist {
+  font-size: 0.8rem;
+}
+
+.track-cover {
+  width: 40px;
+  height: 40px;
+}
   
   /* Twitch mobile */
   .twitch-content {

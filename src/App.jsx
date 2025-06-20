@@ -5,6 +5,88 @@ import './App.css';
 import hrLogo from './assets/HR_LOGO.png';
 import GrilleProgrammes from './components/GrilleProgrammes';
 
+function NextTrack() {
+  const [trackData, setTrackData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTrackData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('https://api.radioking.io/widget/radio/heavenradio/track/ckoi?limit=1');
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération des données');
+        }
+        const data = await response.json();
+        setTrackData(data[0] || null);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        setTrackData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrackData();
+    const interval = setInterval(fetchTrackData, 30000); // Actualise toutes les 30 secondes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="next-track-widget">
+        <div className="track-loading">
+          <div className="loading-spinner"></div>
+          <p>Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="next-track-widget">
+        <div className="track-error">
+          <p>Erreur: {error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trackData) {
+    return (
+      <div className="next-track-widget">
+        <div className="track-info">
+          <p>Aucune information disponible</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="next-track-widget">
+      <div className="track-info">
+        <div className="track-header">
+          <h4>En cours de diffusion</h4>
+        </div>
+        <div className="track-details">
+          <div className="track-title">{trackData.title}</div>
+          {trackData.artist && <div className="track-artist">{trackData.artist}</div>}
+          {trackData.album && <div className="track-album">{trackData.album}</div>}
+        </div>
+        {trackData.cover_url && (
+          <div className="track-cover">
+            <img src={trackData.cover_url} alt="Pochette" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ContactForm() {
   const [state, handleSubmit] = useForm("mqabdbpj");
   if (state.succeeded) {
@@ -28,12 +110,12 @@ function ContactForm() {
         <ValidationError prefix="Email" field="email" errors={state.errors} className="form-error" />
       </div>
       <div className="form-field">
-        <label htmlFor="message">Commentaire ou message</label>
-        <textarea id="message" name="message" rows="5" required />
+        <label htmlFor="message">Commentaires ou message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
         <ValidationError prefix="Message" field="message" errors={state.errors} className="form-error" />
       </div>
-      <button type="submit" disabled={state.submitting} className="submit-btn">
-        {state.submitting ? 'Envoi...' : 'Envoyer'}
+      <button type="submit" disabled={state.submitting} className="btn-primary">
+        Envoyer
       </button>
     </form>
   );
@@ -282,7 +364,7 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
           >
-            <h1>La radio Catholique et<br />100% MUSIQUE ROCK/METAL</h1>
+            <h1>La radio Catholique et<br />100% LOUANGES ET ADORATIONS</h1>
           </motion.div>
           
           <motion.div 
@@ -372,16 +454,7 @@ function App() {
                    ></iframe>
                  </div>
                  
-                 <div className="next-track-widget">
-                   <iframe
-                     src="https://widget.radioking.io/next-track/heavenradio"
-                     width="470"
-                     height="80"
-                     frameBorder="0"
-                     allowFullScreen
-                     title="Titre suivant"
-                   ></iframe>
-                 </div>
+                 <NextTrack />
                </div>
              </motion.div>
            </div>
