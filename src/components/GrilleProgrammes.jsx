@@ -33,13 +33,13 @@ function GrilleProgrammes() {
       content: [
         { type: 'title', text: 'Live TikTok / Twitch / Discord' },
         { type: 'program', text: 'La libre antenne' },
-        { type: 'program', text: '22h : Psaumes des complies' }
+        { type: 'program', text: '22h : Psaumes de la nuti' }
       ]
     },
     {
       time: '1h - 7h',
       content: [
-        { type: 'title', text: '🌙 Heaven Night' },
+        { type: 'title', text: '<img src="https://cdn-icons-png.flaticon.com/512/6190/6190680.png" alt="Angel" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 8px;"/> Heaven Night' },
         { type: 'program', text: '3h : Chapelet à la miséricorde divine' },
         { type: 'program', text: '5h : Les mystères lumineux' },
         { type: 'program', text: 'Ambiance nocturne spirituelle' }
@@ -73,8 +73,8 @@ function GrilleProgrammes() {
                 <div 
                   key={itemIndex}
                   className={`program-item ${item.type}`}
+                  dangerouslySetInnerHTML={{ __html: item.text }}
                 >
-                  {item.text}
                 </div>
               ))}
             </div>
