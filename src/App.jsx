@@ -70,7 +70,7 @@ function NextTrack() {
     <div className="next-track-widget">
       <div className="track-info">
         <div className="track-header">
-          <h4>En cours de diffusion</h4>
+          <h4>Prochain titre</h4>
         </div>
         <div className="track-details">
           <div className="track-title">{trackData.title}</div>
