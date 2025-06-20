@@ -374,7 +374,7 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: "easeOut" }}
           >
-            <h1>La radio Catholique et<br />100% LOUANGES ET ADORATIONS</h1>
+            <h1>La radio Catholique et<br />100% LOUANGE ET ADORATION</h1>
           </motion.div>
           
           <motion.div 
