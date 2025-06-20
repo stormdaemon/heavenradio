@@ -561,11 +561,12 @@ function App() {
             >
               <div className="stream-player">
                 <iframe
-                  src="https://player.twitch.tv/?channel=heavenradiocatholique&parent=localhost&muted=false"
-                  height="400"
+                  src="https://player.twitch.tv/?channel=heavenradiocatholique&parent=heavenradio.fr&muted=false"
                   width="100%"
+                  height="100%"
                   frameBorder="0"
                   allowFullScreen
+                  scrolling="no"
                   title="Heaven Radio Twitch Stream"
                 ></iframe>
               </div>
@@ -580,10 +581,11 @@ function App() {
             >
               <div className="chat-container">
                 <iframe
-                  src="https://www.twitch.tv/embed/heavenradiocatholique/chat?parent=localhost"
-                  height="400"
+                  src="https://www.twitch.tv/embed/heavenradiocatholique/chat?parent=heavenradio.fr"
                   width="100%"
+                  height="100%"
                   frameBorder="0"
+                  scrolling="no"
                   title="Heaven Radio Twitch Chat"
                 ></iframe>
               </div>
