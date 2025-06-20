@@ -125,6 +125,7 @@ function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState('accueil');
+  const [showDonationPopup, setShowDonationPopup] = useState(false);
 
   // Load RadioKing widget script
   useEffect(() => {
@@ -138,6 +139,15 @@ function App() {
         document.head.removeChild(script);
       }
     };
+  }, []);
+
+  // Show donation popup after 12 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowDonationPopup(true);
+    }, 12000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const navItems = [
@@ -373,19 +383,33 @@ function App() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
           >
-            <motion.button 
-              className="btn-primary"
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: "0 20px 40px rgba(255, 215, 0, 0.4)"
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 300 }}
-              onClick={() => handleNavClick('#ecouter', 'ecouter')}
-            >
-              <span>ÉCOUTER</span>
-              <div className="btn-glow"></div>
-            </motion.button>
+            <div className="hero-buttons">
+              <motion.button 
+                className="btn-primary"
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 20px 40px rgba(255, 215, 0, 0.4)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                onClick={() => handleNavClick('#ecouter', 'ecouter')}
+              >
+                <span>ÉCOUTER</span>
+                <div className="btn-glow"></div>
+              </motion.button>
+
+              <motion.a 
+                href="https://www.paypal.com/paypalme/revelationradio?country.x=FR&locale.x=fr_FR"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="donation-cta-button"
+                whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(220, 53, 69, 0.4)" }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <i className="fas fa-heart"></i>
+                SOUTENIR
+              </motion.a>
+            </div>
             
             <motion.div 
               className="logo-showcase"
@@ -799,8 +823,58 @@ function App() {
            </motion.a>
          </motion.div>
        </div>
-    </div>
-  );
-}
+
+       {/* Popup de don */}
+       <AnimatePresence>
+         {showDonationPopup && (
+           <motion.div 
+             className="donation-popup-overlay"
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             transition={{ duration: 0.3 }}
+           >
+             <motion.div 
+               className="donation-popup"
+               initial={{ opacity: 0, scale: 0.8, y: 50 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.8, y: 50 }}
+               transition={{ type: "spring", stiffness: 300, damping: 20 }}
+             >
+               <button 
+                 className="popup-close"
+                 onClick={() => setShowDonationPopup(false)}
+               >
+                 <i className="fas fa-times"></i>
+               </button>
+               
+               <div className="popup-content">
+                 <div className="popup-icon">
+                   <i className="fas fa-heart"></i>
+                 </div>
+                 <h3>Soutenez Heaven Radio</h3>
+                 <p>Votre générosité nous aide à continuer notre mission de diffuser la parole divine et d'accompagner les âmes dans leur cheminement spirituel.</p>
+                 
+                 <motion.a 
+                   href="https://www.paypal.com/paypalme/revelationradio?country.x=FR&locale.x=fr_FR"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="donation-btn"
+                   whileHover={{ scale: 1.05 }}
+                   whileTap={{ scale: 0.95 }}
+                 >
+                   <i className="fab fa-paypal"></i>
+                   Faire un don
+                 </motion.a>
+                 
+                 <p className="popup-subtitle">Merci pour votre soutien 🙏</p>
+               </div>
+             </motion.div>
+           </motion.div>
+         )}
+       </AnimatePresence>
+     </div>
+   );
+ }
 
 export default App;
