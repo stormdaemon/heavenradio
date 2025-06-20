@@ -466,16 +466,11 @@ function App() {
                viewport={{ once: true }}
              >
                <div className="radio-player-container">
-                 <div className="radio-player">
                    <iframe
-                     src="https://player.radioking.io/heavenradio/?c=%23000000&c2=%23FFFFFF&f=h&i=1&p=1&s=0&li=1&popup=1&plc=0&h=undefined&l=470&v=2"
-                     height="120"
-                     width="470"
-                     frameBorder="0"
-                     allowFullScreen
+                     src="https://player.radioking.io/heavenradio/?c=%231e7fcb&c2=%23ffffff&f=h&i=0&p=0&s=0&li=0&popup=1&plc=0&h=undefined&l=470&v=2"
                      title="Heaven Radio Player"
                    ></iframe>
-                 </div>
+                   <script type="text/javascript" src="https://player.radioking.io/scripts/iframe.bundle.js"></script>
                  
                  <NextTrack />
                </div>

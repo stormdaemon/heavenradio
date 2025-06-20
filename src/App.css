@@ -2297,8 +2297,6 @@ body {
   
   .radio-player iframe {
     width: 100%;
-    max-width: 350px;
-    height: 100px;
   }
 
   .next-track-widget {
@@ -2485,8 +2483,22 @@ body {
   /* Radio player mobile */
 .radio-player iframe {
   width: 100%;
-  max-width: 300px;
-  height: 80px;
+  max-width: 350px;
+  height: 100px;
+  min-height: 100px;
+  touch-action: auto;
+  pointer-events: auto;
+  -webkit-touch-callout: default;
+}
+
+.radio-player-container {
+  touch-action: auto;
+  pointer-events: auto;
+}
+
+.radio-player {
+  touch-action: auto;
+  pointer-events: auto;
 }
 
 .next-track-widget {
