@@ -6,7 +6,7 @@ import hrLogo from './assets/HR_LOGO.png';
 import GrilleProgrammes from './components/GrilleProgrammes';
 
 function NextTrack() {
-  const [trackData, setTrackData] = useState(null);
+  const [trackData, setTrackData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,16 +14,16 @@ function NextTrack() {
     const fetchTrackData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://api.radioking.io/widget/radio/heavenradio/track/ckoi?limit=1');
+        const response = await fetch('https://api.radioking.io/widget/radio/heavenradio/track/ckoi?limit=2');
         if (!response.ok) {
           throw new Error('Erreur lors de la récupération des données');
         }
         const data = await response.json();
-        setTrackData(data[0] || null);
+        setTrackData(data || []);
         setError(null);
       } catch (err) {
         setError(err.message);
-        setTrackData(null);
+        setTrackData([]);
       } finally {
         setLoading(false);
       }
@@ -56,7 +56,7 @@ function NextTrack() {
     );
   }
 
-  if (!trackData) {
+  if (!trackData || trackData.length === 0) {
     return (
       <div className="next-track-widget">
         <div className="track-info">
@@ -70,18 +70,17 @@ function NextTrack() {
     <div className="next-track-widget">
       <div className="track-info">
         <div className="track-header">
-          <h4>Prochain titre</h4>
+          <h4>Prochains titres</h4>
         </div>
-        <div className="track-details">
-          <div className="track-title">{trackData.title}</div>
-          {trackData.artist && <div className="track-artist">{trackData.artist}</div>}
-          {trackData.album && <div className="track-album">{trackData.album}</div>}
+        <div className="tracks-grid">
+          {trackData.map((track, index) => (
+            <div key={index} className="track-details">
+              <div className="track-title">{track.title}</div>
+              {track.artist && <div className="track-artist">{track.artist}</div>}
+              {track.album && <div className="track-album">{track.album}</div>}
+            </div>
+          ))}
         </div>
-        {trackData.cover_url && (
-          <div className="track-cover">
-            <img src={trackData.cover_url} alt="Pochette" />
-          </div>
-        )}
       </div>
     </div>
   );
