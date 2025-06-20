@@ -33,7 +33,7 @@ function GrilleProgrammes() {
       content: [
         { type: 'title', text: 'Live TikTok / Twitch / Discord' },
         { type: 'program', text: 'La libre antenne' },
-        { type: 'program', text: '22h : Psaumes de la nuti' }
+        { type: 'program', text: '22h : Psaumes de la nuit' }
       ]
     },
     {
