@@ -230,6 +230,33 @@ function App() {
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Heaven Radio - Radio Catholique',
+      text: 'Découvrez Heaven Radio, la radio catholique qui vous accompagne dans votre foi !',
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback pour les navigateurs qui ne supportent pas l'API Web Share
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Lien copié dans le presse-papiers !');
+      }
+    } catch (error) {
+      console.log('Erreur lors du partage:', error);
+      // Fallback: copier dans le presse-papiers
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Lien copié dans le presse-papiers !');
+      } catch (clipboardError) {
+        console.log('Erreur lors de la copie:', clipboardError);
+      }
+    }
+  };
+
   useEffect(() => {
     window.addEventListener('click', handleInteraction);
     window.addEventListener('scroll', handleInteraction);
@@ -503,7 +530,11 @@ function App() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
               >
-                <h1>La radio Catholique et<br />100% LOUANGE ET ADORATION</h1>
+                <h1>
+                  <span className="hero-title-full">La radio Catholique et<br />100% LOUANGE ET ADORATION</span>
+                  <span className="hero-title-mobile">100% LOUANGE<br />ET ADORATION</span>
+                  <span className="hero-title-compact">100% LOUANGE ET ADORATION</span>
+                </h1>
               </motion.div>
               
               <motion.div 
@@ -980,6 +1011,18 @@ function App() {
            >
              <i className="fab fa-twitch"></i>
            </motion.a>
+           
+           <motion.button 
+             onClick={handleShare}
+             className="social-item share"
+             whileHover={{ scale: 1.1, x: -5 }}
+             initial={{ opacity: 0, x: 30 }}
+             animate={{ opacity: 1, x: 0 }}
+             transition={{ delay: 0.7 }}
+             title="Partager Heaven Radio"
+           >
+             <i className="fas fa-share-alt"></i>
+           </motion.button>
          </motion.div>
        </div>
 

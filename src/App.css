@@ -213,6 +213,14 @@
   .listeners-count {
     font-size: 12px;
   }
+
+  .hero-text {
+    margin-top: 9rem;
+  }
+
+  .hero-section{
+    height: fit-content;
+  }
 }
 
 @media (max-width: 480px) {
@@ -539,7 +547,7 @@ body {
   .hero-columns {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 0rem;
     min-height: 90vh;
   }
   
@@ -579,13 +587,35 @@ body {
 /* iPhone SE et très petits écrans */
 @media (max-width: 414px) {
   .hero-section {
-    min-height: 120vh;
-    padding: 4rem 1rem 5rem;
+    padding: 3rem 1rem 4rem;
   }
   
   .hero-columns {
-    gap: 2rem;
-    min-height: 110vh;
+    gap: 0rem !important;
+    min-height: 115vh;
+  }
+  
+  .hero-text h1 {
+    font-size: 1.6rem;
+    line-height: 1.1;
+    margin-top: 3rem;
+  }
+  
+  /* Masquer les autres titres sur très petits écrans */
+  .hero-title-full,
+  .hero-title-compact {
+    display: none;
+  }
+  
+  /* Afficher le titre mobile sur 2 lignes */
+  .hero-title-mobile {
+    display: block;
+    font-size: 1.1rem;
+    line-height: 1.2;
+  }
+  
+  .hero-actions {
+    gap: 1.5rem;
   }
   
   .hero-left-column {
@@ -625,13 +655,30 @@ body {
 /* iPhone SE portrait (375px) */
 @media (max-width: 375px) {
   .hero-section {
-    min-height: 125vh;
-    padding: 4rem 0.75rem 5rem;
+    padding: 2rem 0.75rem 3rem;
   }
   
   .hero-columns {
-    gap: 1.5rem;
-    min-height: 115vh;
+    gap: 1rem;
+  }
+  
+  .hero-text h1 {
+    font-size: 1.5rem;
+    line-height: 1.1;
+    margin-bottom: 0.6rem;
+  }
+  
+  /* Masquer les autres titres sur iPhone SE */
+  .hero-title-full,
+  .hero-title-compact {
+    display: none;
+  }
+  
+  /* Afficher le titre mobile sur 2 lignes pour iPhone SE */
+  .hero-title-mobile {
+    display: block;
+    font-size: 1rem;
+    line-height: 1.2;
   }
   
   .hero-left-column {
@@ -1153,6 +1200,16 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   max-width: 100%;
+}
+
+/* Styles par défaut pour les titres conditionnels */
+.hero-title-full {
+  display: block;
+}
+
+.hero-title-mobile,
+.hero-title-compact {
+  display: none;
 }
 
 .hero-buttons {
@@ -2632,14 +2689,40 @@ body {
   
   /* Hero Section */
   .hero-section {
-    padding: 5rem 1rem 3rem;
-    min-height: 90vh;
+    padding: 4rem 1rem 2rem;
+    min-height: 100vh;
   }
   
   .hero-text h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  /* Masquer le titre complet sur mobile */
+  .hero-title-full {
+    display: none;
+  }
+  
+  /* Afficher le titre compact sur tablette/mobile */
+  .hero-title-compact {
+    display: block;
+    font-size: 1.2rem;
     line-height: 1.2;
-    margin-bottom: 1.5rem;
+  }
+  
+  /* Masquer le titre mobile sur tablette */
+  .hero-title-mobile {
+    display: none;
+  }
+  
+  .hero-left-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
   }
   
   .hero-actions {
@@ -3180,6 +3263,19 @@ html {
   box-shadow: 0 8px 25px rgba(145, 70, 255, 0.2);
 }
 
+.social-item.share {
+  background: rgba(26, 26, 26, 0.9);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  cursor: pointer;
+}
+
+.social-item.share:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+  color: #d4af37;
+}
+
 /* Responsive pour le menu flottant */
 @media (max-width: 768px) {
   .floating-social-menu {
@@ -3420,5 +3516,11 @@ html {
   .donation-cta-button {
     padding: 12px 25px;
     font-size: 14px;
+  }
+}
+
+@media (max-width: 1500px) {
+  .nav-logo span {
+    display: none;
   }
 }
