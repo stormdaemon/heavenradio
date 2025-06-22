@@ -28,6 +28,12 @@
   height: 90px;
 }
 
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
 .nav-logo {
   display: flex;
   align-items: center;
@@ -57,6 +63,12 @@
   display: none;
   gap: 50px;
   align-items: center;
+}
+
+@media (max-width: 650px) {
+  .nav-logo span {
+    display: none;
+  }
 }
 
 @media (min-width: 1316px) {
@@ -95,6 +107,128 @@
   background: linear-gradient(90deg, #d4af37, #f4e4a6, #d4af37);
   border-radius: 2px;
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+}
+
+/* Compteur d'auditeurs en direct */
+.live-listeners-counter {
+  background: rgba(0, 0, 0, 0.95) !important;
+  backdrop-filter: blur(20px);
+  border: 2px solid #d4af37 !important;
+  border-radius: 15px;
+  padding: 12px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  font-family: 'Michroma', sans-serif;
+  min-width: 120px;
+  display: flex !important;
+  align-items: center;
+  gap: 15px;
+  visibility: visible !important;
+}
+
+.live-listeners-counter:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(212, 175, 55, 0.4);
+  transform: translateY(-2px);
+}
+
+.listeners-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.listeners-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.live-dot {
+  color: #ff4444;
+  font-size: 8px;
+  filter: drop-shadow(0 0 8px #ff4444);
+}
+
+.listeners-icon .fa-headphones {
+  color: #d4af37;
+  font-size: 16px;
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+}
+
+.listeners-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.listeners-label {
+  font-size: 9px;
+  color: #d4af37;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.listeners-count {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 1315px) {
+  .mobile-menu-btn {
+    display: block; /* Show burger on smaller screens */
+    position: relative; /* Ensure it's contained */
+    order: 2; /* Place it after the listener info */
+  }
+
+  .nav-links {
+    display: none; /* Hide desktop links */
+  }
+}
+
+@media (max-width: 768px) {
+  .live-listeners-counter {
+    top: 15px;
+    right: 15px;
+    padding: 10px 12px;
+  }
+  
+  .listeners-icon .fa-headphones {
+    font-size: 14px;
+  }
+  
+  .listeners-label {
+    font-size: 8px;
+  }
+  
+  .listeners-count {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .live-listeners-counter {
+    top: 10px;
+    right: 10px;
+    padding: 8px 10px;
+  }
+  
+  .listeners-content {
+    gap: 8px;
+  }
+  
+  .listeners-icon {
+    gap: 4px;
+  }
 }
 
 .mobile-menu-btn {
@@ -248,7 +382,6 @@ body {
 .hero-content {
   max-width: 1400px;
   margin: 0 auto;
-  text-align: center;
   width: 100%;
   z-index: 3;
   position: relative;
@@ -256,14 +389,283 @@ body {
   overflow: visible;
 }
 
+.hero-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.hero-left-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.hero-right-column {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .hero-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: 3rem;
   flex-wrap: wrap;
   margin-top: 2rem;
   width: 100%;
+}
+
+/* iPhone Mockup Styles */
+.iphone-mockup {
+  position: relative;
+  transform: perspective(1000px) rotateY(-15deg) rotateX(5deg);
+  transition: transform 0.3s ease;
+}
+
+.iphone-mockup:hover {
+  transform: perspective(1000px) rotateY(-10deg) rotateX(2deg) scale(1.02);
+}
+
+.iphone-frame {
+  width: 280px;
+  height: 570px;
+  background: linear-gradient(145deg, #2c2c2c 0%, #1a1a1a 50%, #000 100%);
+  border-radius: 45px;
+  padding: 12px;
+  box-shadow: 
+    0 0 0 2px #333,
+    0 0 0 4px #1a1a1a,
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.iphone-notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  z-index: 10;
+}
+
+.iphone-screen {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 35px;
+  overflow: hidden;
+  position: relative;
+}
+
+.iphone-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 35px;
+}
+
+.iphone-home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) and (min-width: 769px) {
+  .hero-section {
+    min-height: 100vh;
+    padding: 6rem 2rem 4rem;
+  }
+  
+  .hero-columns {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+    min-height: 85vh;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .hero-left-column {
+    text-align: center;
+    order: 1;
+    max-width: 600px;
+  }
+  
+  .hero-right-column {
+    order: 2;
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  
+  .iphone-mockup {
+    transform: perspective(1000px) rotateY(-10deg) rotateX(3deg) scale(0.7);
+  }
+  
+  .iphone-mockup:hover {
+    transform: perspective(1000px) rotateY(-8deg) rotateX(2deg) scale(0.75);
+  }
+  
+  .iphone-frame {
+    width: 220px;
+    height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 100vh;
+    padding: 5rem 1rem 3rem;
+  }
+  
+  .hero-columns {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    min-height: 90vh;
+  }
+  
+  .hero-right-column {
+    position: static;
+    transform: none;
+    order: 2;
+  }
+  
+  .iphone-mockup {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg) scale(0.8);
+  }
+  
+  .iphone-mockup:hover {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg) scale(0.85);
+  }
+  
+  .iphone-frame {
+    width: 220px;
+    height: 450px;
+  }
+  
+  .iphone-notch {
+    width: 100px;
+    height: 24px;
+  }
+  
+  .iphone-home-indicator {
+    width: 100px;
+  }
+  
+  .hero-actions {
+    justify-content: center;
+  }
+}
+
+/* iPhone SE et très petits écrans */
+@media (max-width: 414px) {
+  .hero-section {
+    min-height: 120vh;
+    padding: 4rem 1rem 5rem;
+  }
+  
+  .hero-columns {
+    gap: 2rem;
+    min-height: 110vh;
+  }
+  
+  .hero-left-column {
+    order: 1;
+  }
+  
+  .hero-right-column {
+    order: 2;
+    position: static;
+    transform: none;
+  }
+  
+  .iphone-mockup {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg) scale(0.7);
+  }
+  
+  .iphone-mockup:hover {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg) scale(0.75);
+  }
+  
+  .iphone-frame {
+    width: 200px;
+    height: 410px;
+  }
+  
+  .iphone-notch {
+    width: 90px;
+    height: 22px;
+  }
+  
+  .iphone-home-indicator {
+    width: 90px;
+    height: 3px;
+  }
+}
+
+/* iPhone SE portrait (375px) */
+@media (max-width: 375px) {
+  .hero-section {
+    min-height: 125vh;
+    padding: 4rem 0.75rem 5rem;
+  }
+  
+  .hero-columns {
+    gap: 1.5rem;
+    min-height: 115vh;
+  }
+  
+  .hero-left-column {
+    order: 1;
+  }
+  
+  .hero-right-column {
+    order: 2;
+    position: static;
+    transform: none;
+  }
+  
+  .iphone-mockup {
+    transform: perspective(1000px) rotateY(0deg) rotateX(0deg) scale(0.65);
+  }
+  
+  .iphone-frame {
+    width: 180px;
+    height: 370px;
+  }
+  
+  .iphone-notch {
+    width: 80px;
+    height: 20px;
+  }
+  
+  .iphone-home-indicator {
+    width: 80px;
+    height: 3px;
+  }
+  
+  .hero-actions {
+    gap: 1.5rem;
+  }
 }
 
 /* Live Section Fixes */

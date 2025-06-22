@@ -1,9 +1,105 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm, ValidationError } from '@formspree/react';
 import './App.css';
 import hrLogo from './assets/HR_LOGO.png';
 import GrilleProgrammes from './components/GrilleProgrammes';
+
+function LiveListenersCounter({ children }) {
+  const [listenersCount, setListenersCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchListenersCount = async () => {
+      try {
+        const response = await fetch('https://api.radioking.io/radio/666997/statistics/session/count', {
+          headers: {
+            'Accept': 'application/json, text/plain, */*',
+            'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA2MTU5NTUsImp0aSI6ImU5OGEwOTMwLTVhZDEtNGIzZi1iMDUyLWIzOGE4MzU1ZDE0OSIsInN1YiI6MTAyODU4MX0.Mm73HFyZmjotICGvvXbTULcCV12YKVK2R6XDc5a2gdiK9EPNq-lgrjnfJKuU5ic40jhCaVE68yY3k6nilBIg95xQPvNPhFL-BVCEb00gX8J2HYeabWDbjlezVjog-wKCJ0hGQEoNQ7niyxKZgT7NpZmbrsCZUjpl5lGsIJYFh48nlKMQYPgGRtg3Rcxm3-wypMfXgz1O0WagWUn2LanyxhGTqs-0HQb2zAV3VarZuV_L0vEZqBjW6pQO9CY2B1j3T9XCT4jTvZ4M6v9fsNCEKDe5IX2FyGu8-pIrZrZwNU9th3gaXJOiZyv59muy4W30e_hJbFE-onLQUIGdZDeNFA',
+            'Origin': 'https://manager.radioking.com',
+            'Referer': 'https://manager.radioking.com/'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Erreur lors de la récupération du nombre d\'auditeurs');
+        }
+        
+        const data = await response.json();
+        setListenersCount(data.count);
+        setError(null);
+      } catch (err) {
+        setError(err.message);
+        setListenersCount(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListenersCount();
+    const interval = setInterval(fetchListenersCount, 60000); // Actualise toutes les minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <motion.div 
+        className="live-listeners-counter"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="listeners-content">
+          <div className="listeners-icon">
+            <i className="fas fa-circle live-dot"></i>
+            <i className="fas fa-headphones"></i>
+          </div>
+          <div className="listeners-info">
+            <span className="listeners-label">EN DIRECT</span>
+            <span className="listeners-count">...</span>
+          </div>
+        </div>
+        {children}
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div 
+      className="live-listeners-counter"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ scale: 1.05 }}
+    >
+      <div className="listeners-content">
+        <div className="listeners-icon">
+          <motion.i 
+            className="fas fa-circle live-dot"
+            animate={{ opacity: [1, 0.3, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          ></motion.i>
+          <i className="fas fa-headphones"></i>
+        </div>
+        <div className="listeners-info">
+          <span className="listeners-label">EN DIRECT</span>
+          <motion.span 
+            className="listeners-count"
+            key={listenersCount}
+            initial={{ scale: 1.2 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {error ? '0' : listenersCount}
+          </motion.span>
+        </div>
+      </div>
+      {children}
+    </motion.div>
+  );
+}
 
 function NextTrack() {
   const [trackData, setTrackData] = useState([]);
@@ -125,6 +221,26 @@ function App() {
   const [scrollY, setScrollY] = useState(0);
   const [activeSection, setActiveSection] = useState('accueil');
   const [showDonationPopup, setShowDonationPopup] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const playerRef = useRef(null);
+
+  const handleInteraction = () => {
+    if (!hasInteracted) {
+      setHasInteracted(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('click', handleInteraction);
+    window.addEventListener('scroll', handleInteraction);
+    window.addEventListener('keydown', handleInteraction);
+
+    return () => {
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+    };
+  }, [hasInteracted]);
 
   // Load RadioKing widget script
   useEffect(() => {
@@ -241,71 +357,77 @@ function App() {
             </motion.span>
           </motion.div>
           
-          <div className="nav-links">
-            {navItems.map((item, index) => (
-              <motion.a 
-                key={item.id}
-                href={item.href}
-                className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick(item.href, item.id);
-                }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  y: -2,
-                  textShadow: "0 0 15px #d4af37"
-                }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{ transitionDelay: `${index * 0.1}s` }}
+          <div className="nav-right">
+            <div className="nav-links">
+              {navItems.map((item, index) => (
+                <motion.a 
+                  key={item.id}
+                  href={item.href}
+                  className={`nav-link ${activeSection === item.id ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick(item.href, item.id);
+                  }}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    y: -2,
+                    textShadow: "0 0 15px #d4af37"
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  style={{ transitionDelay: `${index * 0.1}s` }}
+                >
+                  {item.name}
+                  {activeSection === item.id && (
+                    <motion.div
+                      className="nav-active-indicator"
+                      layoutId="activeIndicator"
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </motion.a>
+              ))}
+            </div>
+            
+            <LiveListenersCounter>
+              <motion.button 
+                className="mobile-menu-btn"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400 }}
               >
-                {item.name}
-                {activeSection === item.id && (
-                  <motion.div
-                    className="nav-active-indicator"
-                    layoutId="activeIndicator"
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-              </motion.a>
-            ))}
+                <motion.span
+                  animate={{ 
+                    rotate: isMenuOpen ? 45 : 0, 
+                    y: isMenuOpen ? 8 : 0,
+                    backgroundColor: isMenuOpen ? '#d4af37' : '#fff'
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+                <motion.span
+                  animate={{ 
+                    opacity: isMenuOpen ? 0 : 1,
+                    backgroundColor: isMenuOpen ? '#d4af37' : '#fff'
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+                <motion.span
+                  animate={{ 
+                    rotate: isMenuOpen ? -45 : 0, 
+                    y: isMenuOpen ? -8 : 0,
+                    backgroundColor: isMenuOpen ? '#d4af37' : '#fff'
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.button>
+            </LiveListenersCounter>
           </div>
           
-          <motion.button 
-            className="mobile-menu-btn"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
-            <motion.span
-              animate={{ 
-                rotate: isMenuOpen ? 45 : 0, 
-                y: isMenuOpen ? 8 : 0,
-                backgroundColor: isMenuOpen ? '#d4af37' : '#fff'
-              }}
-              transition={{ duration: 0.3 }}
-            />
-            <motion.span
-              animate={{ 
-                opacity: isMenuOpen ? 0 : 1,
-                backgroundColor: isMenuOpen ? '#d4af37' : '#fff'
-              }}
-              transition={{ duration: 0.3 }}
-            />
-            <motion.span
-              animate={{ 
-                rotate: isMenuOpen ? -45 : 0, 
-                y: isMenuOpen ? -8 : 0,
-                backgroundColor: isMenuOpen ? '#d4af37' : '#fff'
-              }}
-              transition={{ duration: 0.3 }}
-            />
-          </motion.button>
+
         </div>
         
         <AnimatePresence>
@@ -367,64 +489,102 @@ function App() {
         </div>
         
         <div className="hero-content">
-          <motion.div 
-            className="hero-text"
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
-          >
-            <h1>La radio Catholique et<br />100% LOUANGE ET ADORATION</h1>
-          </motion.div>
-          
-          <motion.div 
-            className="hero-actions"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-          >
-            <div className="hero-buttons">
-              <motion.button 
-                className="btn-primary"
-                whileHover={{ 
-                  scale: 1.05,
-                  boxShadow: "0 20px 40px rgba(255, 215, 0, 0.4)"
-                }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300 }}
-                onClick={() => handleNavClick('#ecouter', 'ecouter')}
-              >
-                <span>ÉCOUTER</span>
-                <div className="btn-glow"></div>
-              </motion.button>
-
-              <motion.a 
-                href="https://www.paypal.com/paypalme/revelationradio?country.x=FR&locale.x=fr_FR"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="donation-cta-button"
-                whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(220, 53, 69, 0.4)" }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <i className="fas fa-heart"></i>
-                SOUTENIR
-              </motion.a>
-            </div>
-            
+          <div className="hero-columns">
+            {/* Colonne gauche - Contenu */}
             <motion.div 
-              className="logo-showcase"
-              initial={{ opacity: 0, rotate: -10 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              transition={{ duration: 1, delay: 0.8 }}
-              whileHover={{ 
-                scale: 1.1,
-                rotate: 5,
-                transition: { type: "spring", stiffness: 300 }
-              }}
+              className="hero-left-column"
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
             >
-              <img src={hrLogo} alt="Heaven Radio" className="hero-logo" />
-              <div className="logo-ring"></div>
+              <motion.div 
+                className="hero-text"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+              >
+                <h1>La radio Catholique et<br />100% LOUANGE ET ADORATION</h1>
+              </motion.div>
+              
+              <motion.div 
+                className="hero-actions"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+              >
+                <div className="hero-buttons">
+                  <motion.button 
+                    className="btn-primary"
+                    whileHover={{ 
+                      scale: 1.05,
+                      boxShadow: "0 20px 40px rgba(255, 215, 0, 0.4)"
+                    }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                    onClick={() => handleNavClick('#ecouter', 'ecouter')}
+                  >
+                    <span>ÉCOUTER</span>
+                    <div className="btn-glow"></div>
+                  </motion.button>
+
+                  <motion.a 
+                    href="https://www.paypal.com/paypalme/revelationradio?country.x=FR&locale.x=fr_FR"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="donation-cta-button"
+                    whileHover={{ scale: 1.05, boxShadow: "0 10px 30px rgba(220, 53, 69, 0.4)" }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <i className="fas fa-heart"></i>
+                    SOUTENIR
+                  </motion.a>
+                </div>
+                
+                <motion.div 
+                  className="logo-showcase"
+                  initial={{ opacity: 0, rotate: -10 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  transition={{ duration: 1, delay: 0.8 }}
+                  whileHover={{ 
+                    scale: 1.1,
+                    rotate: 5,
+                    transition: { type: "spring", stiffness: 300 }
+                  }}
+                  onClick={() => handleNavClick('#twitch', 'twitch')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <img src={hrLogo} alt="Heaven Radio" className="hero-logo" />
+                  <div className="logo-ring"></div>
+                </motion.div>
+              </motion.div>
             </motion.div>
-          </motion.div>
+
+            {/* Colonne droite - Mockup iPhone */}
+            <motion.div 
+              className="hero-right-column"
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
+            >
+              <div className="iphone-mockup">
+                <div className="iphone-frame">
+                  <div className="iphone-notch"></div>
+                  <div className="iphone-screen">
+                    <video 
+                      className="iphone-video"
+                      autoPlay 
+                      muted 
+                      loop 
+                      playsInline
+                    >
+                      <source src="/heaven_video.mp4" type="video/mp4" />
+                    </video>
+                  </div>
+                  <div className="iphone-home-indicator"></div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
         
         <motion.div 
@@ -467,7 +627,10 @@ function App() {
              >
                <div className="radio-player-container">
                    <iframe
-                     src="https://player.radioking.io/heavenradio/?c=%231e7fcb&c2=%23ffffff&f=h&i=0&p=0&s=0&li=0&popup=1&plc=0&h=undefined&l=470&v=2"
+                     ref={playerRef}
+                     src={`https://player.radioking.io/heavenradio/?c=%231e7fcb&c2=%23ffffff&f=h&i=0&p=0&s=0&li=0&popup=0&plc=0&h=undefined&l=470&v=2${hasInteracted ? '&autoplay=1' : ''}`}
+                     frameBorder="0"
+                     allow="autoplay; encrypted-media"
                      title="Heaven Radio Player"
                    ></iframe>
                    <script type="text/javascript" src="https://player.radioking.io/scripts/iframe.bundle.js"></script>
@@ -506,7 +669,7 @@ function App() {
              viewport={{ once: true }}
            >
              <h2>Rejoignez notre communauté</h2>
-             <p>Échangez avec d'autres passionnés de musique rock/metal dans un environnement respectueux et bienveillant</p>
+             <p>Échangez avec d'autres passionnés de louange et d'adoration dans un environnement respectueux et bienveillant</p>
            </motion.div>
            
            <div className="community-content">
@@ -869,7 +1032,9 @@ function App() {
            </motion.div>
          )}
        </AnimatePresence>
-     </div>
+       
+
+    </div>
    );
  }
 
