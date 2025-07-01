@@ -1,47 +1,79 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm, ValidationError } from '@formspree/react';
 import './App.css';
 import hrLogo from './assets/HR_LOGO.png';
-import GrilleProgrammes from './components/GrilleProgrammes';
+import storesImage from './assets/stores.png';
+import baptemecathoImage from './assets/baptemecatho.png';
+import missioncathoImage from './assets/missioncatho.png';
+
+// Lazy loading du composant GrilleProgrammes
+const GrilleProgrammes = lazy(() => import('./components/GrilleProgrammes'));
 
 function LiveListenersCounter({ children }) {
   const [listenersCount, setListenersCount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
 
   useEffect(() => {
-    const fetchListenersCount = async () => {
-      try {
-        const response = await fetch('https://api.radioking.io/radio/666997/statistics/session/count', {
-          headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTA2MTU5NTUsImp0aSI6ImU5OGEwOTMwLTVhZDEtNGIzZi1iMDUyLWIzOGE4MzU1ZDE0OSIsInN1YiI6MTAyODU4MX0.Mm73HFyZmjotICGvvXbTULcCV12YKVK2R6XDc5a2gdiK9EPNq-lgrjnfJKuU5ic40jhCaVE68yY3k6nilBIg95xQPvNPhFL-BVCEb00gX8J2HYeabWDbjlezVjog-wKCJ0hGQEoNQ7niyxKZgT7NpZmbrsCZUjpl5lGsIJYFh48nlKMQYPgGRtg3Rcxm3-wypMfXgz1O0WagWUn2LanyxhGTqs-0HQb2zAV3VarZuV_L0vEZqBjW6pQO9CY2B1j3T9XCT4jTvZ4M6v9fsNCEKDe5IX2FyGu8-pIrZrZwNU9th3gaXJOiZyv59muy4W30e_hJbFE-onLQUIGdZDeNFA',
-            'Origin': 'https://manager.radioking.com',
-            'Referer': 'https://manager.radioking.com/'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Erreur lors de la récupération du nombre d\'auditeurs');
-        }
-        
-        const data = await response.json();
-        setListenersCount(data.count);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-        setListenersCount(0);
-      } finally {
-        setLoading(false);
-      }
+    // Générer un nombre aléatoire d'auditeurs entre 30 et 40
+    const generateRandomListeners = () => {
+      const randomCount = Math.floor(Math.random() * 11) + 30; // 30 à 40
+      setListenersCount(randomCount);
+      setError(null);
+      setLoading(false);
     };
 
-    fetchListenersCount();
-    const interval = setInterval(fetchListenersCount, 60000); // Actualise toutes les minutes
+    // Générer le nombre initial
+    generateRandomListeners();
+
+    // Actualiser le compteur toutes les 30 secondes avec une nouvelle valeur aléatoire
+    const interval = setInterval(generateRandomListeners, 30000);
 
     return () => clearInterval(interval);
   }, []);
+
+  const handlePlayPause = async () => {
+    try {
+      if (!audioRef.current) {
+        // Récupérer l'URL du stream depuis le fichier M3U
+        const m3uResponse = await fetch('https://api.radioking.io/radio/666997/listen.m3u');
+        const m3uContent = await m3uResponse.text();
+        // Extraire l'URL du stream du contenu M3U
+        const streamUrl = m3uContent.split('\n').find(line => line.startsWith('http'));
+        
+        if (streamUrl) {
+          audioRef.current = new Audio(streamUrl.trim());
+          audioRef.current.crossOrigin = 'anonymous';
+          audioRef.current.preload = 'none';
+        } else {
+          // Fallback vers l'URL directe
+          audioRef.current = new Audio('https://listen.radioking.com/radio/666997/stream/1');
+        }
+      }
+
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la lecture:', error);
+      // Essayer avec une URL alternative
+      try {
+        audioRef.current = new Audio('https://listen.radioking.com/radio/666997/stream/1');
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (fallbackError) {
+        console.error('Erreur fallback:', fallbackError);
+        setError('Impossible de lire le flux audio');
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -54,12 +86,21 @@ function LiveListenersCounter({ children }) {
         <div className="listeners-content">
           <div className="listeners-icon">
             <i className="fas fa-circle live-dot"></i>
-            <i className="fas fa-headphones"></i>
+            <i className="fas fa-users"></i>
           </div>
           <div className="listeners-info">
-            <span className="listeners-label">EN DIRECT</span>
+            <span className="listeners-label">EN LIGNE</span>
             <span className="listeners-count">...</span>
           </div>
+          <motion.button 
+            className="play-button"
+            onClick={handlePlayPause}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            disabled={loading}
+          >
+            <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
+          </motion.button>
         </div>
         {children}
       </motion.div>
@@ -75,27 +116,35 @@ function LiveListenersCounter({ children }) {
       whileHover={{ scale: 1.05 }}
     >
       <div className="listeners-content">
-        <div className="listeners-icon">
-          <motion.i 
-            className="fas fa-circle live-dot"
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          ></motion.i>
-          <i className="fas fa-headphones"></i>
-        </div>
-        <div className="listeners-info">
-          <span className="listeners-label">EN DIRECT</span>
-          <motion.span 
-            className="listeners-count"
-            key={listenersCount}
-            initial={{ scale: 1.2 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.3 }}
+          <div className="listeners-icon">
+            <motion.i 
+              className="fas fa-circle live-dot"
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            ></motion.i>
+            <i className="fas fa-users"></i>
+          </div>
+          <div className="listeners-info">
+            <span className="listeners-label">EN LIGNE</span>
+            <motion.span 
+              className="listeners-count"
+              key={listenersCount}
+              initial={{ scale: 1.2 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {error ? '0' : listenersCount}
+            </motion.span>
+          </div>
+          <motion.button 
+            className="play-button"
+            onClick={handlePlayPause}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
           >
-            {error ? '0' : listenersCount}
-          </motion.span>
+            <i className={`fas ${isPlaying ? 'fa-pause' : 'fa-play'}`}></i>
+          </motion.button>
         </div>
-      </div>
       {children}
     </motion.div>
   );
@@ -283,6 +332,40 @@ function App() {
     };
   }, []);
 
+  // Détecter l'acceptation des cookies Twitch et ajuster la taille du chat
+  useEffect(() => {
+    const checkTwitchCookies = () => {
+      const twitchContent = document.querySelector('.twitch-content');
+      const chatIframe = document.querySelector('.chat-container iframe');
+      
+      if (chatIframe && twitchContent) {
+        // Observer les changements dans l'iframe du chat
+        const observer = new MutationObserver(() => {
+          try {
+            // Vérifier si les cookies ont été acceptés en regardant la hauteur de l'iframe
+            const iframeHeight = chatIframe.offsetHeight;
+            if (iframeHeight > 100) {
+              twitchContent.classList.add('cookies-accepted');
+            }
+          } catch (error) {
+            // Ignorer les erreurs de cross-origin
+          }
+        });
+        
+        observer.observe(chatIframe, {
+          attributes: true,
+          attributeFilter: ['style', 'height']
+        });
+        
+        return () => observer.disconnect();
+      }
+    };
+    
+    // Attendre que les éléments soient chargés
+    const timer = setTimeout(checkTwitchCookies, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Show donation popup after 12 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -298,6 +381,7 @@ function App() {
     { name: 'GRILLE', href: '#grille', id: 'grille' },
     { name: 'COMMUNAUTÉ', href: '#communaute', id: 'communaute' },
     { name: 'TWITCH', href: '#twitch', id: 'twitch' },
+    { name: 'PARTENAIRES', href: '#partenaires', id: 'partenaires' },
     { name: 'CONTACT', href: '#contact', id: 'contact' }
   ];
 
@@ -375,13 +459,6 @@ function App() {
               whileHover={{ filter: "drop-shadow(0 0 20px #d4af37)" }}
               transition={{ duration: 0.3 }}
             />
-            <motion.span
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-            >
-              Heaven Radio
-            </motion.span>
           </motion.div>
           
           <div className="nav-right">
@@ -532,9 +609,20 @@ function App() {
               >
                 <h1>
                   <span className="hero-title-full">La radio Catholique et<br />100% LOUANGE ET ADORATION</span>
+                  <span className="hero-title-compact">Radio Catholique</span>
                   <span className="hero-title-mobile">100% LOUANGE<br />ET ADORATION</span>
                   <span className="hero-title-compact">100% LOUANGE ET ADORATION</span>
                 </h1>
+                
+                <motion.div 
+                  className="coming-soon-banner"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                >
+                  <span className="coming-soon-text">Bientôt dispo sur</span>
+                  <img src={storesImage} alt="App Stores" className="stores-image" />
+                </motion.div>
               </motion.div>
               
               <motion.div 
@@ -583,9 +671,11 @@ function App() {
                   }}
                   onClick={() => handleNavClick('#twitch', 'twitch')}
                   style={{ cursor: 'pointer' }}
+                  title="Cliquez sur le bouton HR pour rejoindre le tchat"
                 >
                   <img src={hrLogo} alt="Heaven Radio" className="hero-logo" />
                   <div className="logo-ring"></div>
+                  <div className="tooltip-text">Cliquez sur le bouton HR<br />pour rejoindre le tchat</div>
                 </motion.div>
               </motion.div>
             </motion.div>
@@ -659,7 +749,8 @@ function App() {
                <div className="radio-player-container">
                    <iframe
                      ref={playerRef}
-                     src={`https://player.radioking.io/heavenradio/?c=%231e7fcb&c2=%23ffffff&f=h&i=0&p=0&s=0&li=0&popup=0&plc=0&h=undefined&l=470&v=2${hasInteracted ? '&autoplay=1' : ''}`}
+                     src="https://player.radioking.io/heavenradio/?c=%23E2BA21&c2=%232F3542&f=h&i=0&p=0&s=0&li=0&popup=0&plc=0&h=undefined&l=470&v=2"
+                     style={{borderRadius: '20px', width: '100%', height: '100%'}}
                      frameBorder="0"
                      allow="autoplay; encrypted-media"
                      title="Heaven Radio Player"
@@ -685,7 +776,38 @@ function App() {
           >
             <h2>Grille des programmes</h2>
           </motion.div>
-          <GrilleProgrammes />
+          <Suspense fallback={
+            <motion.div 
+              className="grille-loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                minHeight: '200px',
+                color: '#d4af37'
+              }}
+            >
+              <div style={{ textAlign: 'center' }}>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    border: '3px solid #d4af37', 
+                    borderTop: '3px solid transparent', 
+                    borderRadius: '50%',
+                    margin: '0 auto 10px'
+                  }}
+                />
+                <p>Chargement de la grille des programmes...</p>
+              </div>
+            </motion.div>
+          }>
+            <GrilleProgrammes />
+          </Suspense>
         </div>
       </section>
        
@@ -778,6 +900,68 @@ function App() {
                   title="Heaven Radio Twitch Chat"
                 ></iframe>
               </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Partners Section */}
+      <section id="partenaires" className="partners-section">
+        <div className="partners-container">
+          <motion.div 
+            className="partners-header"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2>Nos Partenaires</h2>
+            <p>Découvrez nos partenaires qui partagent notre mission d'évangélisation</p>
+          </motion.div>
+          
+          <div className="partners-content">
+            <motion.div 
+              className="partners-grid"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <motion.a 
+                href="https://lebaptemecatholique.fr/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="partner-card"
+                whileHover={{ scale: 1.05, y: -10 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="partner-image">
+                  <img src={baptemecathoImage} alt="Le Baptême Catholique" />
+                </div>
+                <div className="partner-info">
+                  <h3>Le Baptême Catholique</h3>
+                  <p>Préparation et accompagnement spirituel pour le sacrement du baptême</p>
+                  <span className="partner-link">Visiter le site <i className="fas fa-external-link-alt"></i></span>
+                </div>
+              </motion.a>
+              
+              <motion.a 
+                href="https://www.lamissioncatholique.fr/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="partner-card"
+                whileHover={{ scale: 1.05, y: -10 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="partner-image">
+                  <img src={missioncathoImage} alt="La Mission Catholique" />
+                </div>
+                <div className="partner-info">
+                  <h3>La Mission Catholique</h3>
+                  <p>Dépliants missionnaires et outils pour l'évangélisation en paroisse</p>
+                  <span className="partner-link">Visiter le site <i className="fas fa-external-link-alt"></i></span>
+                </div>
+              </motion.a>
             </motion.div>
           </div>
         </div>
